@@ -15,4 +15,6 @@ class ErrorsList
 	const PASSWORD_IS_INCORRECT = 103;
 
 	const VALUE_IS_REQUIRED = 104;
+
+	const SESSION_ID_CAN_NOT_BE_EMPTY = 105;
 }
