@@ -147,6 +147,10 @@ On success it returns:
 
 ## List of error codes:
 
+99 - incorrect JSON
+
 100 - login exists in the database
+
 101 - login does not exist in the database
+
 102 - password is incorrect
