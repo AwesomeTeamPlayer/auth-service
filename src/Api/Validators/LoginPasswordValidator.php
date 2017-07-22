@@ -2,7 +2,7 @@
 
 namespace Api\Validators;
 
-class CreateLoginPasswordValidator
+class LoginPasswordValidator
 {
 	/**
 	 * @param string $body

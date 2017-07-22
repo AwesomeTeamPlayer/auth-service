@@ -4,14 +4,14 @@ namespace Api\Validators;
 
 use PHPUnit\Framework\TestCase;
 
-class CreateLoginPasswordValidatorTest extends TestCase
+class LoginPasswordValidatorTest extends TestCase
 {
 	/**
 	 * @dataProvider dataProvider
 	 */
 	public function test_isValid($body, $expectedErrors)
 	{
-		$validator = new CreateLoginPasswordValidator();
+		$validator = new LoginPasswordValidator();
 		$errors = $validator->isValid($body);
 		$this->assertEquals($expectedErrors, $errors);
 	}
