@@ -50,7 +50,7 @@ class MysqlLoginsPasswordsRepository implements LoginsPasswordsRepositoryInterfa
 	 */
 	public function update(string $login, string $hashedPassword)
 	{
-		$this->getPassword($login);
+		$this->getHashedPassword($login);
 
 		$sqlQuery = "
 			UPDATE login_password SET password = '" . $hashedPassword . "' WHERE login='" . $login . "';
@@ -66,7 +66,7 @@ class MysqlLoginsPasswordsRepository implements LoginsPasswordsRepositoryInterfa
 	 *
 	 * @throws LoginDoesNotExistException
 	 */
-	public function getPassword(string $login): string
+	public function getHashedPassword(string $login): string
 	{
 		$sqlQuery = "
 			SELECT * FROM login_password WHERE login='" . $login . "' LIMIT 1;

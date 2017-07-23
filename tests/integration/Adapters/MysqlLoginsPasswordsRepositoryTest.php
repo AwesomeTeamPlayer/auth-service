@@ -29,7 +29,7 @@ class MysqlLoginsPasswordsRepositoryTest extends TestCase
 		$repository = new MysqlLoginsPasswordsRepository($this->mysqli);
 		$repository->create('login', 'password');
 
-		$result = $repository->getPassword('login');
+		$result = $repository->getHashedPassword('login');
 		$this->assertEquals('password', $result);
 	}
 
@@ -49,7 +49,7 @@ class MysqlLoginsPasswordsRepositoryTest extends TestCase
 		$repository->create('login', 'password');
 		$repository->update('login', 'new_password');
 
-		$result = $repository->getPassword('login');
+		$result = $repository->getHashedPassword('login');
 		$this->assertEquals('new_password', $result);
 	}
 
@@ -68,6 +68,6 @@ class MysqlLoginsPasswordsRepositoryTest extends TestCase
 	public function test_getPassword_when_login_does_not_exist()
 	{
 		$repository = new MysqlLoginsPasswordsRepository($this->mysqli);
-		$repository->getPassword('login');
+		$repository->getHashedPassword('login');
 	}
 }

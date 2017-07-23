@@ -12,7 +12,7 @@ class PairCreatorTest extends TestCase
 	public function test_create_with_success()
 	{
 		$repository = $this->getMockBuilder(LoginsPasswordsRepositoryInterface::class)
-			->setMethods(['create', 'update', 'getPassword'])
+			->setMethods(['create', 'update', 'getHashedPassword'])
 			->getMock();
 
 		$pairCreator = new PairCreator($repository, new EmptyStringHasher());
@@ -27,7 +27,7 @@ class PairCreatorTest extends TestCase
 	public function test_create_with_LoginAlreadyExistsException()
 	{
 		$repository = $this->getMockBuilder(LoginsPasswordsRepositoryInterface::class)
-			->setMethods(['create', 'update', 'getPassword'])
+			->setMethods(['create', 'update', 'getHashedPassword'])
 			->getMock();
 		$repository->method('create')->willThrowException(new LoginAlreadyExistsException());
 

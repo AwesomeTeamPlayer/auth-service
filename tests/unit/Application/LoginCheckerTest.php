@@ -11,9 +11,9 @@ class LoginCheckerTest extends TestCase
 	public function test_checkLogin_when_login_exists()
 	{
 		$repository = $this->getMockBuilder(LoginsPasswordsRepositoryInterface::class)
-			->setMethods(['create', 'update', 'getPassword'])
+			->setMethods(['create', 'update', 'getHashedPassword'])
 			->getMock();
-		$repository->method('getPassword')->willReturn('password');
+		$repository->method('getHashedPassword')->willReturn('password');
 
 		$pairCreator = new LoginChecker($repository);
 		$result = $pairCreator->checkLogin('login');
@@ -24,9 +24,9 @@ class LoginCheckerTest extends TestCase
 	public function test_checkLogin_when_login_does_not_exists()
 	{
 		$repository = $this->getMockBuilder(LoginsPasswordsRepositoryInterface::class)
-			->setMethods(['create', 'update', 'getPassword'])
+			->setMethods(['create', 'update', 'getHashedPassword'])
 			->getMock();
-		$repository->method('getPassword')->willThrowException(new LoginDoesNotExistException());
+		$repository->method('getHashedPassword')->willThrowException(new LoginDoesNotExistException());
 
 		$pairCreator = new LoginChecker($repository);
 		$result = $pairCreator->checkLogin('login');

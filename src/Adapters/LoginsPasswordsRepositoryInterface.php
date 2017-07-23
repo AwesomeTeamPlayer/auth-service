@@ -34,5 +34,5 @@ interface LoginsPasswordsRepositoryInterface
 	 *
 	 * @throws LoginDoesNotExistException
 	 */
-	public function getPassword(string $login): string;
+	public function getHashedPassword(string $login): string;
 }

@@ -30,7 +30,7 @@ class LoginChecker
 	public function checkLogin(string $login) : bool
 	{
 		try {
-			$this->loginsPasswordsRepository->getPassword($login);
+			$this->loginsPasswordsRepository->getHashedPassword($login);
 		} catch (LoginDoesNotExistException $exception) {
 			return false;
 		}
