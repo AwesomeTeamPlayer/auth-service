@@ -13,13 +13,21 @@ class PairUpdater
 	private $loginsPasswordsRepository;
 
 	/**
+	 * @var StringHasherInterface;
+	 */
+	private $stringHasher;
+
+	/**
 	 * @param LoginsPasswordsRepositoryInterface $loginsPasswordsRepository
+	 * @param StringHasherInterface $stringHasher
 	 */
 	public function __construct(
-		LoginsPasswordsRepositoryInterface $loginsPasswordsRepository
+		LoginsPasswordsRepositoryInterface $loginsPasswordsRepository,
+		StringHasherInterface $stringHasher
 	)
 	{
 		$this->loginsPasswordsRepository = $loginsPasswordsRepository;
+		$this->stringHasher = $stringHasher;
 	}
 
 	/**
@@ -32,6 +40,8 @@ class PairUpdater
 	 */
 	public function update(string $login, string $password)
 	{
-		$this->loginsPasswordsRepository->update($login, $password);
+		$this->loginsPasswordsRepository->update($login,
+			$this->stringHasher->hash($password)
+		);
 	}
 }

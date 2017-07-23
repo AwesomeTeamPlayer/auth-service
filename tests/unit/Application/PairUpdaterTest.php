@@ -4,6 +4,7 @@ namespace Application;
 
 use Adapters\Exceptions\LoginDoesNotExistException;
 use Adapters\LoginsPasswordsRepositoryInterface;
+use tests\helpers\Application\EmptyStringHasher;
 use PHPUnit\Framework\TestCase;
 
 class PairUpdaterTest extends TestCase
@@ -14,7 +15,7 @@ class PairUpdaterTest extends TestCase
 			->setMethods(['create', 'update', 'getPassword'])
 			->getMock();
 
-		$pairCreator = new PairUpdater($repository);
+		$pairCreator = new PairUpdater($repository, new EmptyStringHasher());
 		$pairCreator->update('login', 'password');
 
 		$this->assertTrue(true);
@@ -30,7 +31,7 @@ class PairUpdaterTest extends TestCase
 			->getMock();
 		$repository->method('update')->willThrowException(new LoginDoesNotExistException());
 
-		$pairCreator = new PairUpdater($repository);
+		$pairCreator = new PairUpdater($repository, new EmptyStringHasher());
 		$pairCreator->update('login', 'password');
 	}
 }

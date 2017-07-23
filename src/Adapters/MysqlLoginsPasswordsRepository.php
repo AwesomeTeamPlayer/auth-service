@@ -23,16 +23,16 @@ class MysqlLoginsPasswordsRepository implements LoginsPasswordsRepositoryInterfa
 
 	/**
 	 * @param string $login
-	 * @param string $password
+	 * @param string $hashedPassword
 	 *
 	 * @return void
 	 *
 	 * @throws LoginAlreadyExistsException
 	 */
-	public function create(string $login, string $password)
+	public function create(string $login, string $hashedPassword)
 	{
 		$sqlQuery = "
-			INSERT INTO login_password (login, password) VALUES ('" . $login . "', '" . $password . "');
+			INSERT INTO login_password (login, password) VALUES ('" . $login . "', '" . $hashedPassword . "');
 		";
 
 		if ($this->mysqli->query($sqlQuery) === false) {
@@ -42,18 +42,18 @@ class MysqlLoginsPasswordsRepository implements LoginsPasswordsRepositoryInterfa
 
 	/**
 	 * @param string $login
-	 * @param string $password
+	 * @param string $hashedPassword
 	 *
 	 * @return void
 	 *
 	 * @throws LoginDoesNotExistException
 	 */
-	public function update(string $login, string $password)
+	public function update(string $login, string $hashedPassword)
 	{
 		$this->getPassword($login);
 
 		$sqlQuery = "
-			UPDATE login_password SET password = '" . $password . "' WHERE login='" . $login . "';
+			UPDATE login_password SET password = '" . $hashedPassword . "' WHERE login='" . $login . "';
 		";
 
 		$this->mysqli->query($sqlQuery);

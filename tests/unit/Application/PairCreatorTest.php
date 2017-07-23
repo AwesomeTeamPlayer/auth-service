@@ -5,6 +5,7 @@ namespace Application;
 use Adapters\Exceptions\LoginAlreadyExistsException;
 use Adapters\LoginsPasswordsRepositoryInterface;
 use PHPUnit\Framework\TestCase;
+use tests\helpers\Application\EmptyStringHasher;
 
 class PairCreatorTest extends TestCase
 {
@@ -14,7 +15,7 @@ class PairCreatorTest extends TestCase
 			->setMethods(['create', 'update', 'getPassword'])
 			->getMock();
 
-		$pairCreator = new PairCreator($repository);
+		$pairCreator = new PairCreator($repository, new EmptyStringHasher());
 		$pairCreator->create('login', 'password');
 
 		$this->assertTrue(true);
@@ -30,7 +31,7 @@ class PairCreatorTest extends TestCase
 			->getMock();
 		$repository->method('create')->willThrowException(new LoginAlreadyExistsException());
 
-		$pairCreator = new PairCreator($repository);
+		$pairCreator = new PairCreator($repository, new EmptyStringHasher());
 		$pairCreator->create('login', 'password');
 	}
 }

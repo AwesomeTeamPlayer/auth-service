@@ -13,13 +13,21 @@ class PairCreator
 	private $loginsPasswordsRepository;
 
 	/**
+	 * @var StringHasherInterface;
+	 */
+	private $stringHasher;
+
+	/**
 	 * @param LoginsPasswordsRepositoryInterface $loginsPasswordsRepository
+	 * @param StringHasherInterface $stringHasher
 	 */
 	public function __construct(
-		LoginsPasswordsRepositoryInterface $loginsPasswordsRepository
+		LoginsPasswordsRepositoryInterface $loginsPasswordsRepository,
+		StringHasherInterface $stringHasher
 	)
 	{
 		$this->loginsPasswordsRepository = $loginsPasswordsRepository;
+		$this->stringHasher = $stringHasher;
 	}
 
 	/**
@@ -32,6 +40,9 @@ class PairCreator
 	 */
 	public function create(string $login, string $password)
 	{
-		$this->loginsPasswordsRepository->create($login, $password);
+		$this->loginsPasswordsRepository->create(
+			$login,
+			$this->stringHasher->hash($password)
+		);
 	}
 }

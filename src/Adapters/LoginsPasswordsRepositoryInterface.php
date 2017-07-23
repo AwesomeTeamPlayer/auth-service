@@ -9,23 +9,23 @@ interface LoginsPasswordsRepositoryInterface
 {
 	/**
 	 * @param string $login
-	 * @param string $password
+	 * @param string $hashedPassword
 	 *
 	 * @return void
 	 *
 	 * @throws LoginAlreadyExistsException
 	 */
-	public function create(string $login, string $password);
+	public function create(string $login, string $hashedPassword);
 
 	/**
 	 * @param string $login
-	 * @param string $password
+	 * @param string $hashedPassword
 	 *
 	 * @return void
 	 *
 	 * @throws LoginDoesNotExistException
 	 */
-	public function update(string $login, string $password);
+	public function update(string $login, string $hashedPassword);
 
 	/**
 	 * @param string $login
