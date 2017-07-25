@@ -5,7 +5,9 @@ namespace Application;
 use Adapters\Exceptions\LoginDoesNotExistException;
 use Adapters\LoginsPasswordsRepositoryInterface;
 use Adapters\SessionsRepositoryInterface;
-use AwesomeTeamPlayerLibraries\Adapters\EventsRepositoryInterface;
+use AwesomeTeamPlayer\Libraries\Adapters\EventsRepositoryInterface;
+use AwesomeTeamPlayer\Libraries\Adapters\ValueObjects\Event;
+use tests\helpers\Application\PredefinedSessionIdGenerator;
 use PHPUnit\Framework\TestCase;
 use tests\helpers\Application\EmptyStringHasher;
 
@@ -63,7 +65,6 @@ class LoginServiceTest extends TestCase
 		$loginService->login('login', 'password');
 	}
 
-	//  todo: finish this test:
 	public function test_login_success()
 	{
 		$loginsPasswordsRepository = $this->getMockBuilder(LoginsPasswordsRepositoryInterface::class)
@@ -74,20 +75,30 @@ class LoginServiceTest extends TestCase
 		$eventsRepository = $this->getMockBuilder(EventsRepositoryInterface::class)
 			->setMethods(['push'])
 			->getMock();
-		$eventsRepository->method('push')->willReturnCallback(function($event){
-			var_dump($event);
+		$eventsRepository->method('push')->willReturnCallback(function(Event $event){
+			$this->assertEquals('LoggedUser', $event->name());
+			$this->assertEquals([
+				'login' => 'login',
+				'sessionId' => 'sessionId'
+			], $event->data());
 		});
 
 		$sessionRepository = $this->getMockBuilder(SessionsRepositoryInterface::class)
 			->getMock();
+		$sessionRepository->method('add')->willReturnCallback(function($login, $sessionId)
+		{
+			$this->assertEquals('login', $login);
+			$this->assertEquals('sessionId', $sessionId);
+		});
 
 		$loginService = new LoginService(
 			$loginsPasswordsRepository,
 			$eventsRepository,
 			$sessionRepository,
 			new EmptyStringHasher(),
-			new SessionIdGenerator()
+			new PredefinedSessionIdGenerator(['sessionId'])
 		);
-		$loginService->login('login', 'password');
+		$sessionId = $loginService->login('login', 'password');
+		$this->assertEquals('sessionId', $sessionId);
 	}
 }

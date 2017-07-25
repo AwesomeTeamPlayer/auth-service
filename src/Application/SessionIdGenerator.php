@@ -2,9 +2,12 @@
 
 namespace Application;
 
-class SessionIdGenerator
+class SessionIdGenerator implements SessionIdGeneratorInterface
 {
-	public function generateSessionId()
+	/**
+	 * @return string
+	 */
+	public function generateSessionId() : string
 	{
 		return md5(mktime() . rand(-9999999999, 9999999999));
 	}
