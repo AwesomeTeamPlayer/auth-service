@@ -3,6 +3,7 @@
 namespace Api;
 
 use Adapters\Exceptions\LoginDoesNotExistException;
+use Api\Exceptions\InvalidErrorCodeException;
 use Api\Validators\ErrorsList;
 use Api\Validators\LoginPasswordValidator;
 use Application\Exceptions\GivenPasswordDoesNotMatchToStoredPasswordException;
@@ -23,16 +24,42 @@ class LoginEndpoint
 	private $loginService;
 
 	/**
+	 * @var ErrorsList
+	 */
+	private $errorsList;
+
+	/**
+	 * @param LoginPasswordValidator $loginPasswordValidator
+	 * @param LoginService $loginService
+	 * @param ErrorsList $errorsList
+	 */
+	public function __construct(
+		LoginPasswordValidator $loginPasswordValidator,
+		LoginService $loginService,
+		ErrorsList $errorsList
+	)
+	{
+		$this->loginPasswordValidator = $loginPasswordValidator;
+		$this->loginService = $loginService;
+		$this->errorsList = $errorsList;
+	}
+
+	/**
 	 * @param Request $request
 	 * @param Response $response
 	 *
 	 * @return Response
+	 *
+	 * @throws InvalidErrorCodeException
 	 */
 	public function run(Request $request, Response $response) : Response
 	{
 		$errors = $this->loginPasswordValidator->isValid($request->getBody());
 		if (empty($errors) === false) {
-			return $response->withJson($response);
+			return $this->getFailedResponse(
+				$response,
+				$errors
+			);
 		}
 
 		$json = json_decode($request->getBody(), true);
@@ -42,22 +69,40 @@ class LoginEndpoint
 		}
 		catch (LoginDoesNotExistException $exception)
 		{
-			return $response->withJson([
-				'status' => 'failed',
-				'login' => [ ErrorsList::LOGIN_DOES_NOT_EXIST_IN_DATABASE ],
-			]);
+			return $this->getFailedResponse(
+				$response,
+				[ 'login' => [ ErrorsList::LOGIN_DOES_NOT_EXIST_IN_DATABASE ] ]
+			);
 		}
 		catch (GivenPasswordDoesNotMatchToStoredPasswordException $exception)
 		{
-			return $response->withJson([
-				'status' => 'failed',
-				'password' => [ ErrorsList::PASSWORD_IS_INCORRECT ],
-			]);
+			return $this->getFailedResponse(
+				$response,
+				[ 'password' => [ ErrorsList::PASSWORD_IS_INCORRECT ] ]
+			);
 		}
 
 		return $response->withJson([
 			'status' => 'success',
             'sessionId' => $sessionId,
 		]);
+	}
+
+	/**
+	 * @param Response $response
+	 * @param $errors
+	 *
+	 * @return Response
+	 */
+	private function getFailedResponse(Response $response, $errors) : Response
+	{
+		$jsonResponse = ['status' => 'failed'];
+
+		foreach ($errors as $label => $errorsList)
+		{
+			$jsonResponse[$label] = $this->errorsList->getTextualErrors($errorsList);
+		}
+
+		return $response->withJson($jsonResponse);
 	}
 }
