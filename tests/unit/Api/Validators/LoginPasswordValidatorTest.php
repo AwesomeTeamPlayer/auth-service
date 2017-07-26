@@ -2,6 +2,7 @@
 
 namespace Api\Validators;
 
+use Api\ErrorsList;
 use PHPUnit\Framework\TestCase;
 
 class LoginPasswordValidatorTest extends TestCase

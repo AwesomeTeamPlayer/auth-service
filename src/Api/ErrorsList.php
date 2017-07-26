@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Validators;
+namespace Api;
 
 use Api\Exceptions\InvalidErrorCodeException;
 

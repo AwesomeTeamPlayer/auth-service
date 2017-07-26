@@ -4,7 +4,6 @@ namespace Api;
 
 use Adapters\Exceptions\LoginDoesNotExistException;
 use Api\Exceptions\InvalidErrorCodeException;
-use Api\Validators\ErrorsList;
 use Api\Validators\LoginPasswordValidator;
 use Application\Exceptions\GivenPasswordDoesNotMatchToStoredPasswordException;
 use Application\LoginService;

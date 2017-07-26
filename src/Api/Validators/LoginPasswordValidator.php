@@ -2,6 +2,8 @@
 
 namespace Api\Validators;
 
+use Api\ErrorsList;
+
 class LoginPasswordValidator
 {
 	/**
