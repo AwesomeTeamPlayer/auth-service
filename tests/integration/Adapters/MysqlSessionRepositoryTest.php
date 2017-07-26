@@ -14,7 +14,7 @@ class MysqlSessionRepositoryTest extends TestCase
 
 	public function setUp()
 	{
-		$this->mysqli = new mysqli('127.0.0.1', 'root', 'root', 'testdb', 3306);
+		$this->mysqli = new mysqli('127.0.0.1', 'root', 'root', 'testdb', 13306);
 		$this->mysqli->query('CREATE TABLE login_session (login varchar(255) NOT NULL, session_id VARCHAR(255) NOT NULL);');
 	}
 	public function tearDown()

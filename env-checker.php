@@ -7,7 +7,7 @@
  * If env is NOT ready this command will return code = 1.
  */
 
-$mysqli = @(new mysqli('127.0.0.1', 'root', 'root', 'testdb', 3306));
+$mysqli = @(new mysqli('127.0.0.1', 'root', 'root', 'testdb', 13306));
 
 if ($mysqli->connect_errno) {
     echo " - Database is not ready";
