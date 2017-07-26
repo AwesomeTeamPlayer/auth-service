@@ -1,0 +1,12 @@
+language: php
+php: '7.1'
+
+services:
+  - docker
+
+install:
+  - composer install
+
+script:
+  - ./runTests.sh
+  - ./runTests-integration.sh
