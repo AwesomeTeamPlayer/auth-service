@@ -30,14 +30,18 @@ On failed it returns:
 ```json
 {
   "status": "failed",
-  "login": {
-    "codeId": <ERROR_CODE_ID>,
-    "text": "..."
-  },
-  "password": {
-    "codeId": <ERROR_CODE_ID>,
-    "text": "..."
-  }
+  "login": [
+      {
+        "codeId": <ERROR_CODE_ID>,
+        "text": "..."
+      }
+  ],
+  "password": [ 
+      {
+        "codeId": <ERROR_CODE_ID>,
+        "text": "..."
+      }
+  ]
 }
 ```
 
@@ -61,14 +65,18 @@ On failed it returns:
 ```json
 {
   "status": "failed",
-  "login": {
-    "codeId": <ERROR_CODE_ID>,
-    "text": "..."
-  },
-  "password": {
-    "codeId": <ERROR_CODE_ID>,
-    "text": "..."
-  }
+  "login": [
+        {
+          "codeId": <ERROR_CODE_ID>,
+          "text": "..."
+        }
+    ],
+    "password": [ 
+        {
+          "codeId": <ERROR_CODE_ID>,
+          "text": "..."
+        }
+    ]
 }
 ```
 
@@ -94,14 +102,18 @@ On failed it returns:
 ```json
 {
   "status": "failed",
-  "login": {
-    "codeId": <ERROR_CODE_ID>,
-    "text": "..."
-  },
-  "password": {
-    "codeId": <ERROR_CODE_ID>,
-    "text": "..."
-  }
+  "login": [
+        {
+          "codeId": <ERROR_CODE_ID>,
+          "text": "..."
+        }
+    ],
+    "password": [ 
+        {
+          "codeId": <ERROR_CODE_ID>,
+          "text": "..."
+        }
+    ]
 }
 ```
 
