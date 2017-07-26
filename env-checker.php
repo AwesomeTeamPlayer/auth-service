@@ -10,11 +10,14 @@
 $mysqli = @(new mysqli('127.0.0.1', 'root', 'root', 'testdb', 3306));
 
 if ($mysqli->connect_errno) {
+    echo " - Database is not ready";
 	exit(1);
 }
 
 if ($mysqli->ping()) {
+	echo " - Database is ready";
 } else {
+	echo " - Can not ping database";
 	exit(1);
 }
 

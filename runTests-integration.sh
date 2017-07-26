@@ -2,14 +2,17 @@
 
 docker run -d --name mysql-for-tests -p="3306:3306" -e MYSQL_ROOT_PASSWORD=root -eMYSQL_DATABASE=testdb mysql:8.0.1
 
-for i in {1..60}
+for i in {0..60}
 do
+
+    echo ""
+    echo ""
+    echo "$i sec:"
 
     if ./env-checker.php; then
         break;
     fi
 
-    echo $i
     sleep 1
 
 done
