@@ -9,7 +9,7 @@ use Application\PairUpdater;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class UpdateLoginPairEndpoint
+class UpdateLoginPairEndpoint extends AbstractEndpoint
 {
 	/**
 	 * @var LoginPasswordValidator
@@ -22,24 +22,20 @@ class UpdateLoginPairEndpoint
 	private $pairUpdater;
 
 	/**
-	 * @var ErrorsList
-	 */
-	private $errorsList;
-
-	/**
 	 * @param LoginPasswordValidator $loginPasswordValidator
 	 * @param PairUpdater $pairUpdater
-	 * @param ErrorsList $errorsList
+	 * @param ErrorsListToTextualConverter $errorsListToTextualConverter
 	 */
 	public function __construct(
 		LoginPasswordValidator $loginPasswordValidator,
 		PairUpdater $pairUpdater,
-		ErrorsList $errorsList
+		ErrorsListToTextualConverter $errorsListToTextualConverter
 	)
 	{
+		parent::__construct($errorsListToTextualConverter);
+
 		$this->loginPasswordValidator = $loginPasswordValidator;
 		$this->pairUpdater = $pairUpdater;
-		$this->errorsList = $errorsList;
 	}
 
 	/**
@@ -76,23 +72,5 @@ class UpdateLoginPairEndpoint
 		return $response->withJson([
 			'status' => 'success'
 		]);
-	}
-
-	/**
-	 * @param Response $response
-	 * @param $errors
-	 *
-	 * @return Response
-	 */
-	private function getFailedResponse(Response $response, $errors) : Response
-	{
-		$jsonResponse = ['status' => 'failed'];
-
-		foreach ($errors as $label => $errorsList)
-		{
-			$jsonResponse[$label] = $this->errorsList->getTextualErrors($errorsList);
-		}
-
-		return $response->withJson($jsonResponse);
 	}
 }

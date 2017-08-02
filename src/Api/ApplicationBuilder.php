@@ -2,12 +2,20 @@
 
 namespace Api;
 
-use Adapters\EventsRepositoryInterface;
 use Adapters\MysqlLoginsPasswordsRepository;
-use Adapters\RabbitMqEventsRepository;
+use Adapters\MysqlSessionRepository;
 use Api\Validators\LoginPasswordValidator;
+use Api\Validators\LoginValidator;
+use Api\Validators\SessionIdValidator;
+use Application\LoginChecker;
+use Application\LoginService;
+use Application\LogoutService;
 use Application\PairCreator;
+use Application\PairUpdater;
+use Application\SessionIdGenerator;
 use Application\Sha1StringHasher;
+use AwesomeTeamPlayer\Libraries\Adapters\EventsRepositoryInterface;
+use AwesomeTeamPlayer\Libraries\Adapters\RabbitMqEventsRepository;
 use mysqli;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Slim\App;
@@ -35,19 +43,74 @@ class ApplicationBuilder
 			]
 		));
 
-		$repository = new MysqlLoginsPasswordsRepository($mysqli);
+		$loginsPasswordsRepository = new MysqlLoginsPasswordsRepository($mysqli);
+		$sessionRepository = new MysqlSessionRepository($mysqli);
+		$eventsRepository = $this->buildEventRepository($applicationConfig);
 
 		$createLoginPairEndpoint = new CreateLoginPairEndpoint(
 			new LoginPasswordValidator(),
 			new PairCreator(
-				$repository,
+				$loginsPasswordsRepository,
 				new Sha1StringHasher()
+			),
+			new ErrorsListToTextualConverter()
+		);
+
+		$updateLoginPairEndpoint = new UpdateLoginPairEndpoint(
+			new LoginPasswordValidator(),
+			new PairUpdater(
+				$loginsPasswordsRepository,
+				new Sha1StringHasher()
+			),
+			new ErrorsListToTextualConverter()
+		);
+
+		$loginEndpoint = new LoginEndpoint(
+			new LoginPasswordValidator(),
+			new LoginService(
+				$loginsPasswordsRepository,
+				$eventsRepository,
+				$sessionRepository,
+				new Sha1StringHasher(),
+				new SessionIdGenerator()
+			),
+			new ErrorsListToTextualConverter()
+		);
+
+		$logoutEndpoint = new LogoutEndpoint(
+			new SessionIdValidator(),
+			new LogoutService(
+				$sessionRepository
+			),
+			new ErrorsListToTextualConverter()
+		);
+
+		$checkingPairEndpoint = new CheckingPairEndpoint(
+			new LoginValidator(),
+			new LoginChecker(
+				$loginsPasswordsRepository
 			),
 			new ErrorsListToTextualConverter()
 		);
 
 		$app->put('/pair', function (Request $request, Response $response) use ($createLoginPairEndpoint) {
 			return $createLoginPairEndpoint->run($request, $response);
+		});
+
+		$app->post('/pair', function (Request $request, Response $response) use ($updateLoginPairEndpoint) {
+			return $updateLoginPairEndpoint->run($request, $response);
+		});
+
+		$app->post('/login', function (Request $request, Response $response) use ($loginEndpoint) {
+			return $loginEndpoint->run($request, $response);
+		});
+
+		$app->post('/logout', function (Request $request, Response $response) use ($logoutEndpoint) {
+			return $logoutEndpoint->run($request, $response);
+		});
+
+		$app->post('/has-login', function (Request $request, Response $response) use ($checkingPairEndpoint) {
+			return $checkingPairEndpoint->run($request, $response);
 		});
 
 		$app->get('/', function (Request $request, Response $response) use ($applicationConfig, $mysqli, $amqp) {
