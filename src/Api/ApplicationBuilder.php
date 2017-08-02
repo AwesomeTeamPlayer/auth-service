@@ -3,7 +3,11 @@
 namespace Api;
 
 use Adapters\EventsRepositoryInterface;
+use Adapters\MysqlLoginsPasswordsRepository;
 use Adapters\RabbitMqEventsRepository;
+use Api\Validators\LoginPasswordValidator;
+use Application\PairCreator;
+use Application\Sha1StringHasher;
 use mysqli;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Slim\App;
@@ -31,11 +35,22 @@ class ApplicationBuilder
 			]
 		));
 
-		$app->get('/', function (Request $request, Response $response, $args) use ($applicationConfig, $mysqli, $amqp) {
+		$repository = new MysqlLoginsPasswordsRepository($mysqli);
 
+		$createLoginPairEndpoint = new CreateLoginPairEndpoint(
+			new LoginPasswordValidator(),
+			new PairCreator(
+				$repository,
+				new Sha1StringHasher()
+			),
+			new ErrorsListToTextualConverter()
+		);
+
+		$app->put('/pair', function (Request $request, Response $response) use ($createLoginPairEndpoint) {
+			return $createLoginPairEndpoint->run($request, $response);
 		});
 
-		$app->get('/', function (Request $request, Response $response, $args) use ($applicationConfig, $mysqli, $amqp) {
+		$app->get('/', function (Request $request, Response $response) use ($applicationConfig, $mysqli, $amqp) {
 			return $response->withJson(
 				[
 					'type' => 'auth-service',

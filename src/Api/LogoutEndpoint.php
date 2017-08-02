@@ -8,7 +8,7 @@ use Application\LogoutService;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class LogoutEndpoint
+class LogoutEndpoint extends AbstractEndpoint
 {
 	/**
 	 * @var SessionIdValidator
@@ -21,24 +21,20 @@ class LogoutEndpoint
 	private $logoutService;
 
 	/**
-	 * @var ErrorsList
-	 */
-	private $errorsList;
-
-	/**
 	 * @param SessionIdValidator $sessionIdValidator
 	 * @param LogoutService $logoutService
-	 * @param ErrorsList $errorsList
+	 * @param ErrorsListToTextualConverter $errorsListToTextualConverter
 	 */
 	public function __construct(
 		SessionIdValidator $sessionIdValidator,
 		LogoutService $logoutService,
-		ErrorsList $errorsList
+		ErrorsListToTextualConverter $errorsListToTextualConverter
 	)
 	{
+		parent::__construct($errorsListToTextualConverter);
+
 		$this->sessionIdValidator = $sessionIdValidator;
 		$this->logoutService = $logoutService;
-		$this->errorsList = $errorsList;
 	}
 
 	/**
@@ -66,23 +62,5 @@ class LogoutEndpoint
 		return $response->withJson([
 			'status' => $isSuccess
 		]);
-	}
-
-	/**
-	 * @param Response $response
-	 * @param $errors
-	 *
-	 * @return Response
-	 */
-	private function getFailedResponse(Response $response, $errors) : Response
-	{
-		$jsonResponse = ['status' => 'failed'];
-
-		foreach ($errors as $label => $errorsList)
-		{
-			$jsonResponse[$label] = $this->errorsList->getTextualErrors($errorsList);
-		}
-
-		return $response->withJson($jsonResponse);
 	}
 }

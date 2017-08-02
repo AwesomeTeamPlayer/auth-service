@@ -8,7 +8,7 @@ use Application\LoginChecker;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class CheckingPairEndpoint
+class CheckingPairEndpoint extends AbstractEndpoint
 {
 	/**
 	 * @var LoginValidator
@@ -21,24 +21,20 @@ class CheckingPairEndpoint
 	private $loginChecker;
 
 	/**
-	 * @var ErrorsList
-	 */
-	private $errorsList;
-
-	/**
 	 * @param LoginValidator $loginValidator
 	 * @param LoginChecker $loginChecker
-	 * @param ErrorsList $errorsList
+	 * @param ErrorsListToTextualConverter $errorsListToTextualConverter
 	 */
 	public function __construct(
 		LoginValidator $loginValidator,
 		LoginChecker $loginChecker,
-		ErrorsList $errorsList
+		ErrorsListToTextualConverter $errorsListToTextualConverter
 	)
 	{
+		parent::__construct($errorsListToTextualConverter);
+
 		$this->loginValidator = $loginValidator;
 		$this->loginChecker = $loginChecker;
-		$this->errorsList = $errorsList;
 	}
 
 	/**
@@ -66,23 +62,5 @@ class CheckingPairEndpoint
 		return $response->withJson([
 			'hasLogin' => $hasLogin
 		]);
-	}
-
-	/**
-	 * @param Response $response
-	 * @param $errors
-	 *
-	 * @return Response
-	 */
-	private function getFailedResponse(Response $response, $errors) : Response
-	{
-		$jsonResponse = ['status' => 'failed'];
-
-		foreach ($errors as $label => $errorsList)
-		{
-			$jsonResponse[$label] = $this->errorsList->getTextualErrors($errorsList);
-		}
-
-		return $response->withJson($jsonResponse);
 	}
 }

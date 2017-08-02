@@ -9,7 +9,7 @@ use Application\PairCreator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class CreateLoginPairEndpoint
+class CreateLoginPairEndpoint extends AbstractEndpoint
 {
 	/**
 	 * @var LoginPasswordValidator
@@ -21,25 +21,22 @@ class CreateLoginPairEndpoint
 	 */
 	private $pairCreator;
 
-	/**
-	 * @var ErrorsList
-	 */
-	private $errorsList;
 
 	/**
 	 * @param LoginPasswordValidator $loginPasswordValidator
 	 * @param PairCreator $pairCreator
-	 * @param ErrorsList $errorsList
+	 * @param ErrorsListToTextualConverter $errorsListToTextualConverter
 	 */
 	public function __construct(
 		LoginPasswordValidator $loginPasswordValidator,
 		PairCreator $pairCreator,
-		ErrorsList $errorsList
+		ErrorsListToTextualConverter $errorsListToTextualConverter
 	)
 	{
+		parent::__construct($errorsListToTextualConverter);
+
 		$this->loginPasswordValidator = $loginPasswordValidator;
 		$this->pairCreator = $pairCreator;
-		$this->errorsList = $errorsList;
 	}
 
 	/**
@@ -76,23 +73,5 @@ class CreateLoginPairEndpoint
 		return $response->withJson([
 			'status' => 'success'
 		]);
-	}
-
-	/**
-	 * @param Response $response
-	 * @param $errors
-	 *
-	 * @return Response
-	 */
-	private function getFailedResponse(Response $response, $errors) : Response
-	{
-		$jsonResponse = ['status' => 'failed'];
-
-		foreach ($errors as $label => $errorsList)
-		{
-			$jsonResponse[$label] = $this->errorsList->getTextualErrors($errorsList);
-		}
-
-		return $response->withJson($jsonResponse);
 	}
 }

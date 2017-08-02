@@ -10,7 +10,7 @@ use Application\LoginService;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class LoginEndpoint
+class LoginEndpoint extends AbstractEndpoint
 {
 	/**
 	 * @var LoginPasswordValidator
@@ -23,24 +23,20 @@ class LoginEndpoint
 	private $loginService;
 
 	/**
-	 * @var ErrorsList
-	 */
-	private $errorsList;
-
-	/**
 	 * @param LoginPasswordValidator $loginPasswordValidator
 	 * @param LoginService $loginService
-	 * @param ErrorsList $errorsList
+	 * @param ErrorsListToTextualConverter $errorsListToTextualConverter
 	 */
 	public function __construct(
 		LoginPasswordValidator $loginPasswordValidator,
 		LoginService $loginService,
-		ErrorsList $errorsList
+		ErrorsListToTextualConverter $errorsListToTextualConverter
 	)
 	{
+		parent::__construct($errorsListToTextualConverter);
+
 		$this->loginPasswordValidator = $loginPasswordValidator;
 		$this->loginService = $loginService;
-		$this->errorsList = $errorsList;
 	}
 
 	/**
@@ -87,21 +83,4 @@ class LoginEndpoint
 		]);
 	}
 
-	/**
-	 * @param Response $response
-	 * @param $errors
-	 *
-	 * @return Response
-	 */
-	private function getFailedResponse(Response $response, $errors) : Response
-	{
-		$jsonResponse = ['status' => 'failed'];
-
-		foreach ($errors as $label => $errorsList)
-		{
-			$jsonResponse[$label] = $this->errorsList->getTextualErrors($errorsList);
-		}
-
-		return $response->withJson($jsonResponse);
-	}
 }
