@@ -59,8 +59,14 @@ class LogoutEndpoint extends AbstractEndpoint
 
 		$isSuccess = $this->logoutService->logout($json['sessionId']);
 
+		if ($isSuccess) {
+			return $response->withJson([
+				'status' => 'success'
+			]);
+		}
+
 		return $response->withJson([
-			'status' => $isSuccess
+			'status' => 'failed'
 		]);
 	}
 }
